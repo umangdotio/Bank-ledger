@@ -1,50 +1,43 @@
 const mongoose = require("mongoose")
 
+
 const transactionSchema = new mongoose.Schema({
     fromAccount: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "account",
-        required: [true, "From Account is required"],
-        index: true,
+        required: [ true, "Transaction must be associated with a from account" ],
+        index: true
     },
     toAccount: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "account",
-        required: [true, "To Account is required"],
-        index: true,
-    },
-    amount: {
-        type: Number,   
-        required: [ true, "Amount is required"], 
-        min: [0, "Amount must be a positive number"]
+        required: [ true, "Transaction must be associated with a to account" ],
+        index: true
     },
     status: {
         type: String,
         enum: {
-            values: ["Pending", "Completed", "Failed", "Reversed"],
-            message: "Status must be either Pending, Completed, Failed or Reversed"
+            values: [ "PENDING", "COMPLETED", "FAILED", "REVERSED" ],
+            message: "Status can be either PENDING, COMPLETED, FAILED or REVERSED",
         },
-        default: "Pending",
-         index: true,
+        default: "PENDING"
+    },
+    amount: {
+        type: Number,
+        required: [ true, "Amount is required for creating a transaction" ],
+        min: [ 0, "Transaction amount cannot be negative" ]
     },
     idempotencyKey: {
         type: String,
-        required: [true, "Idempotency Key is required for transaction"],
-        unique: true,
+        required: [ true, "Idempotency Key is required for creating a transaction" ],
         index: true,
-    },
-    description: {
-        type: String,
-        default: "",
-    },
-    createdAt: {
-        type: Date,     
-        default: Date.now
+        unique: true
     }
-},{
+}, {
     timestamps: true
 })
 
 const transactionModel = mongoose.model("transaction", transactionSchema)
 
-module.exports = transactionModel
+
+module.exports = transactionModel   
